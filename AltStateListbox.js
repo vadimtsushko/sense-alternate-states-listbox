@@ -6,6 +6,9 @@ define( ["jquery", "text!./style.css", "qlik"], function ( $, cssContent, qlik )
 			qListObjectDef: {
 				qShowAlternatives: true,
 				qFrequencyMode: "V",
+				qSortCriterias : {
+					qSortByState : 0
+				},
 				qInitialDataFetch: [{
 					qWidth: 2,
 					qHeight: 50
@@ -49,25 +52,93 @@ define( ["jquery", "text!./style.css", "qlik"], function ( $, cssContent, qlik )
 								return data.qListObjectDef && !data.qListObjectDef.qLibraryId;
 							}
 						},
-						frequency: {
-							type: "string",
-							component: "dropdown",
-							label: "Frequency mode",
-							ref: "qListObjectDef.qFrequencyMode",
-							options: [{
-								value: "N",
-								label: "No frequency"
+						qSortByLoadOrder:{
+							type: "numeric",
+							component : "dropdown",
+							label : "Sort by Load Order",
+							ref : "qListObjectDef.qDef.qSortCriterias.0.qSortByLoadOrder",
+							options : [{
+								value : 1,
+								label : "Ascending"
 							}, {
-								value: "V",
-								label: "Absolute value"
+								value : 0,
+								label : "No"
 							}, {
-								value: "P",
-								label: "Percent"
-							}, {
-								value: "R",
-								label: "Relative"
+								value : -1,
+								label : "Descending"
 							}],
-							defaultValue: "V"
+							defaultValue : 1,
+						},
+						qSortByState:{
+							type: "numeric",
+							component : "dropdown",
+							label : "Sort by State",
+							ref : "qListObjectDef.qDef.qSortCriterias.0.qSortByState",
+							options : [{
+								value : 1,
+								label : "Ascending"
+							}, {
+								value : 0,
+								label : "No"
+							}, {
+								value : -1,
+								label : "Descending"
+							}],
+							defaultValue : 0,
+
+						},
+						qSortByFrequency:{
+							type: "numeric",
+							component : "dropdown",
+							label : "Sort by Frequence",
+							ref : "qListObjectDef.qDef.qSortCriterias.0.qSortByFrequency",
+							options : [{
+								value : -1,
+								label : "Ascending"
+							}, {
+								value : 0,
+								label : "No"
+							}, {
+								value : 1,
+								label : "Descending"
+							}],
+							defaultValue : 0,
+
+						},
+						qSortByNumeric:{
+							type: "numeric",
+							component : "dropdown",
+							label : "Sort by Numeric",
+							ref : "qListObjectDef.qDef.qSortCriterias.0.qSortByNumeric",
+							options : [{
+								value : 1,
+								label : "Ascending"
+							}, {
+								value : 0,
+								label : "No"
+							}, {
+								value : -1,
+								label : "Descending"
+							}],
+							defaultValue : 0,
+
+						},
+						qSortByAscii:{
+							type: "numeric",
+							component : "dropdown",
+							label : "Sort by Alphabetical",
+							ref : "qListObjectDef.qDef.qSortCriterias.0.qSortByAscii",
+							options : [{
+								value : 1,
+								label : "Ascending"
+							}, {
+								value : 0,
+								label : "No"
+							}, {
+								value : -1,
+								label : "Descending"
+							}],
+							defaultValue : 0,
 						}
 					}
 				},
@@ -92,30 +163,82 @@ define( ["jquery", "text!./style.css", "qlik"], function ( $, cssContent, qlik )
 										}));
 									  });
 								}
+							},
+							shape : {
+								ref : "prop.shape",
+								label : "Shape",
+								type : "string",
+								component : "dropdown",
+								defaultValue : "100%",
+								options : [{
+									value : "100%",
+									label : "1 Column"
+								}, {
+									value : "50%",
+									label : "2 Columns"
+								}, {
+									value : "33.33%",
+									label : "3 Columns"
+								}, {
+									value : "25%",
+									label : "4 Columns"
+								}, {
+									value : "20%",
+									label : "5 Columns"
+								}, {
+									value: "horizontal",
+									label: "One row"
+								}
+								],
+							},
+							allowMultipleSelection : {
+								ref : "prop.allowMultipleSelection",
+								label : "Allow multiple selection",
+								type : "boolean",
+								defaultValue : false
 							}
+
 						}
 					}
 			  }
 		},
 		snapshot: {
-			canTakeSnapshot: true
+			canTakeSnapshot: false
 		},
-		paint: function ( $element ) {
+		paint: function ( $element , layout ) {
 			var self = this, html = "<ul>";
-			this.backendApi.eachDataRow( function ( rownum, row ) {
-				html += '<li class="data state' + row[0].qState + '" data-value="' + row[0].qElemNumber + '">' + row[0].qText;
-				if ( row[0].qFrequency ) {
-					html += '<span>' + row[0].qFrequency + '</span>';
+			var liWidth = layout.prop.shape;
+			if (liWidth == 'horizontal') {
+				var rowCount = this.backendApi.getRowCount();
+				if (rowCount == 0) {
+					liWidth = '100%';
+				} else {
+					liWidth = (100 / rowCount).toFixed(2) + '%';
 				}
-				html += '</li>';
+			}
+			console.log('liWidth', liWidth);
+
+			this.backendApi.eachDataRow( function ( rownum, row ) {
+				html += '<li class="data state' + row[0].qState + '" data-value="' + row[0].qElemNumber + '"';
+				html += ' style="width:'+liWidth+ ';">';
+				var checkMark = '&nbsp';
+				if(row[0].qState=='S'){
+					checkMark = '✓';
+				}
+				html += '<span class="qv-object-AltStateListbox-item">' + row[0].qText + '</span>'
+				html += '<span class="qv-object-AltStateListbox-checkMark">' + checkMark + '</span></li>';
 			} );
 			html += "</ul>";
+			//if (selectedCount != 1) {
+			//	this.backendApi.selectValues( dim, [valueToSelect], false );
+			//}
+
 			$element.html( html );
 			if ( this.selectionsEnabled ) {
 				$element.find( 'li' ).on( 'qv-activate', function () {
 					if ( this.hasAttribute( "data-value" ) ) {
 						var value = parseInt( this.getAttribute( "data-value" ), 10 ), dim = 0;
-						self.selectValues( dim, [value], true );
+						self.backendApi.selectValues( dim, [value], layout.prop.allowMultipleSelection );
 						$( this ).toggleClass( "selected" );
 					}
 				} );

@@ -3,21 +3,41 @@
 }
 .qv-object-AltStateListbox ul {
 	list-style: none;
+	margin-bottom:20px;
+	overflow:hidden;
+	border-top:1px solid #ccc;
 }
+
+/*.qv-object-AltStateListbox li {*/
+	/*width: {{layout.prop.columns}};*/
+/*}*/
 .qv-object-AltStateListbox li.data {
-	padding: 4px;
+	/*padding: 4px;*/
+	/*margin: 3px;*/
 	border-bottom: 1px solid #ddd;
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	line-height:1.5em;
+	border-bottom:1px solid #ccc;
+	float:left;
+	display:inline;
 }
+
+
+
 /* frequency */
-.qv-object-AltStateListbox li.data span
+.qv-object-AltStateListbox li.data span.qv-object-AltStateListbox-checkMark
 {
-	padding-left: 10px;
-	font-style: italic;
+	padding-right: 10px;
+	font-weight: bold;
 	float:right;
 }
+.qv-object-AltStateListbox li.data span.qv-object-AltStateListbox-item
+{
+	padding-left: 10px;
+}
+
 /* colors when NOT in selection mode */
 
 .qv-object-AltStateListbox li.stateS, .qv-object-AltStateListbox li.stateL {
@@ -41,16 +61,18 @@
 }
 /* colors when in selection mode */
 .qv-object-AltStateListbox.qv-selections-active li {
-	background-image: none;
-	background-color: #ddd;
-	color: #000;
+	/*background-image: none;*/
+	/*background-color: #ddd;*/
+	/*color: #000;*/
 }
 
 .qv-object-AltStateListbox.qv-selections-active li.selected {
-	background-image: linear-gradient(top, #52cc52, #4dc04d);
-	background-image: -o-linear-gradient(top, #52cc52, #4dc04d);
-	background-image: -moz-linear-gradient(top, #52cc52, #4dc04d);
-	background-image: -webkit-linear-gradient(top, #52cc52, #4dc04d);
-	background-image: -ms-linear-gradient(top, #52cc52, #4dc04d);
-	color: #fff;
+	/*background-image: linear-gradient(top, #52cc52, #4dc04d);*/
+	/*background-image: -o-linear-gradient(top, #52cc52, #4dc04d);*/
+	/*background-image: -moz-linear-gradient(top, #52cc52, #4dc04d);*/
+	/*background-image: -webkit-linear-gradient(top, #52cc52, #4dc04d);*/
+	/*background-image: -ms-linear-gradient(top, #52cc52, #4dc04d);*/
+	/*color: #fff;*/
 }
+
+
