@@ -1,5 +1,6 @@
 define( ["jquery", "text!./style.css", "qlik"], function ( $, cssContent, qlik ) {
 	'use strict';
+	var savedQlik = qlik;
 	$( "<style>" ).html( cssContent ).appendTo( "head" );
 	return {
 		initialProperties: {
@@ -7,7 +8,11 @@ define( ["jquery", "text!./style.css", "qlik"], function ( $, cssContent, qlik )
 				qShowAlternatives: true,
 				qFrequencyMode: "V",
 				qSortCriterias : {
-					qSortByState : 0
+					qSortByState : 0,
+					qSortByLoadOrder: 1,
+					qSortByFrequency: 0,
+					qSortByNumeric: 0,
+					qSortByAscii: 0
 				},
 				qInitialDataFetch: [{
 					qWidth: 2,
@@ -158,6 +163,7 @@ define( ["jquery", "text!./style.css", "qlik"], function ( $, cssContent, qlik )
 								defaultValue : "$",		
 								options: function() {
 								  return qlik.currApp(this).getAppLayout().then(function (layout){
+									   console.log('app.layout',layout);
 										return [{value : "$", label : "Default"}].concat(layout.qStateNames.map(function (state){
 											  return {value : state, label : state}
 										}));
@@ -217,6 +223,7 @@ define( ["jquery", "text!./style.css", "qlik"], function ( $, cssContent, qlik )
 				}
 			}
 			console.log('liWidth', liWidth);
+			console.log('qlik', savedQlik);
 
 			this.backendApi.eachDataRow( function ( rownum, row ) {
 				html += '<li class="data state' + row[0].qState + '" data-value="' + row[0].qElemNumber + '"';
@@ -229,9 +236,6 @@ define( ["jquery", "text!./style.css", "qlik"], function ( $, cssContent, qlik )
 				html += '<span class="qv-object-AltStateListbox-checkMark">' + checkMark + '</span></li>';
 			} );
 			html += "</ul>";
-			//if (selectedCount != 1) {
-			//	this.backendApi.selectValues( dim, [valueToSelect], false );
-			//}
 
 			$element.html( html );
 			if ( this.selectionsEnabled ) {
